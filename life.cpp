@@ -4,20 +4,21 @@
 
 struct cell : sc_module {
 
-    bool alive;
+    bool alive, firstloop;
     
     sc_in_clk clk;
     sc_in<bool> neighbors_alive[8];
     sc_out<bool> alive_out;
     sc_signal<bool> alive_signal;
     
-    void mainloop ()
+    void update ()
     {
-        while (true)
+        if (firstloop)
         {
-            alive_out.write (alive);
-            wait ();
-            
+            firstloop = false;
+        }
+        else
+        {
             int nalive = 0;
             for (int i = 0; i < 8; i++)
             {
@@ -31,13 +32,28 @@ struct cell : sc_module {
                 alive = true; // birth conditions
             // otherwise, don't change anything
         }
+        alive_out.write (alive);
+    }
+    
+    void thread_main ()
+    {
+        while (true)
+        {
+            update ();
+            wait ();
+        }
     }
     
     SC_CTOR (cell)
     {
+        firstloop = true;
         alive = false;
         alive_out (alive_signal);
-        SC_THREAD (mainloop);
+#ifdef THREAD_PROCESSES
+        SC_THREAD (thread_main);
+#else
+        SC_METHOD (update);
+#endif
         sensitive << clk.pos ();
     }
 
