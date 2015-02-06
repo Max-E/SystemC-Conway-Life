@@ -163,6 +163,7 @@ int sc_main (int argc, char *argv[])
     
     endwin ();
 #else
+    printf ("initialization done\n");
     sc_start (TIME, SC_NS);
 #endif
     
