@@ -49,6 +49,7 @@ struct cell : sc_module {
         firstloop = true;
         alive = false;
         alive_out (alive_signal);
+//#define THREAD_PROCESSES
 #ifdef THREAD_PROCESSES
         SC_THREAD (thread_main);
 #else
@@ -99,7 +100,11 @@ static const int starter_pattern[21][36] =
 
 int sc_main (int argc, char *argv[])
 {
+#ifdef THREAD_PROCESSES
+    int VGRID = 64, HGRID = 64;
+#else
     int VGRID = 128, HGRID = 128;
+#endif
     int TIME = 1024;
     cell *grid[VGRID][HGRID];
     
