@@ -51,11 +51,18 @@ struct cell : sc_module {
         alive_out (alive_signal);
 //#define THREAD_PROCESSES
 #ifdef THREAD_PROCESSES
+//#define CTHREAD_PROCESSES
+#ifdef CTHREAD_PROCESSES
+        SC_CTHREAD (thread_main, clk.pos ());
+#else
         SC_THREAD (thread_main);
+#endif
 #else
         SC_METHOD (update);
 #endif
+#ifndef CTHREAD_PROCESSES
         sensitive << clk.pos ();
+#endif
     }
 
 };
