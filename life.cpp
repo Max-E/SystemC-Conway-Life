@@ -2,6 +2,8 @@
 #include <string.h>
 #include <ncurses.h>
 
+//#define ENDLESS
+
 struct cell : sc_module {
 
     bool alive, firstloop;
@@ -154,7 +156,11 @@ int sc_main (int argc, char *argv[])
 #ifdef INTERACTIVE
     initscr ();
     
+#ifdef ENDLESS
+    while (true)
+#else
     for (int i = 0; i < TIME; i++)
+#endif
     {
         sc_start (1, SC_NS);
         
@@ -172,7 +178,10 @@ int sc_main (int argc, char *argv[])
     endwin ();
 #else
     printf ("initialization done\n");
-    sc_start (TIME, SC_NS);
+#ifdef ENDLESS
+    while (true)
+#endif
+        sc_start (TIME, SC_NS);
 #endif
     
     return 0;
